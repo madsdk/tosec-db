@@ -5,6 +5,7 @@ import sys
 import re
 import os
 import sqlite3
+import argparse
 
 tosec_system = ['+2','+2a','+3','130XE','A1000','A1200','A1200-A4000','A2000','A2000-A3000','A2024','A2500-A3000UX','A3000','A4000','A4000T','A500','A500+','A500-A1000-A2000','A500-A1000-A2000-CDTV','A500-A1200','A500-A1200-A2000-A4000','A500-A2000','A500-A600-A2000','A570','A600','A600HD','AGA','AGA-CD32','Aladdin Deck Enhancer','CD32','CDTV','Computrainer','Doctor PC Jr.','ECS','ECS-AGA','Executive','Mega ST','Mega-STE','OCS','OCS-AGA','ORCH80','Osbourne 1','PIANO90','PlayChoice-10','Plus4','Primo-A','Primo-A64','Primo-B','Primo-B64','Pro-Primo','ST','STE','STE-Falcon','TT','TURBO-R GT','TURBO-R ST','VS DualSystem','VS UniSystem']
 tosec_video = ['CGA','EGA','HGC','MCGA','MDA','NTSC','NTSC-PAL','PAL','PAL-60','PAL-NTSC','SVGA','VGA','XGA']
@@ -85,27 +86,63 @@ def parse_tosec_name(tosec_name):
         m = token_regexp.match(rest)
 
     return info
-
-# print('Parsing XML')
-# dom = parse(sys.argv[1])
-# print('Done')
-
-# games = dom.getElementsByTagName('game')
-# for game in games:
-#     info = parse_tosec_name(game.getAttribute('name'))
-#     if not info is None:
-#         info['tosec_name'] = game.getAttribute('name')
-#         print(info)
     
+def get_text_value(node):
+    text_nodes = []
+    for child in node.childNodes:
+        if child.nodeType == child.TEXT_NODE:
+            text_nodes.append(child)
+    return ' '.join([str.strip(t.nodeValue) for t in text_nodes])
+
+def typecheck_dir(path):
+    if not os.path.isdir(path):
+        print(f'The path {path} does not point to a directory.')
+        raise ValueError()
+    return path
+
+def typecheck_file(path):
+    if not os.path.exists(path) and os.access(path, os.R_OK):
+        print(f'The path {path} does not point to a readable file.')
+        raise ValueError()
+    return path
 
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        print('Usage: parser.py db-file system <folder>')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('dbfile', help='The SQLite database file.')
+    parser.add_argument('--system',dest='system', help='The system specifier string, e.g. "Amiga"', required=False)
+    parser.add_argument('--folder', dest='folder', help='The file system path to scan for TOSEC ROM files.', required=False, type=typecheck_dir)
+    parser.add_argument('--datfile', dest='datfile', help='The file system path to a TOSEC dat file.', required=False, type=typecheck_file)
+    args = parser.parse_args()
+    
+    # Folder and system are dependant on each other.
+    if args.folder is not None:
+        if args.system is None:
+            print('If you use the --folder argument you must provide the --system argument as well.')
+            sys.exit(1)
+    if args.system is not None:
+        if args.folder is None:
+            print('If you use the --system argument you must provide the --folder argument as well.')
+            sys.exit(1)
+
+    # We must have either --folder or --datfile, not both.
+    mode = None
+    if args.folder is not None:
+        if args.datfile is not None:
+            print('Arguments --folder and --datfile cannot be used together.')
+            sys.exit(1)
+        mode = 'folder'
+    elif args.datfile is not None:
+        mode = 'datfile'
+    else:
+        print('One of --folder or --datfile must be used.')
         sys.exit(1)
 
+    # Assign the arguments to sensible named variables.
+    dbfile = args.dbfile
+    
     # Connect to the database.
     try: 
-        conn = sqlite3.connect(sys.argv[1])
+        conn = sqlite3.connect(dbfile)
     except Exception:
         print('Error opening database file.')
         sys.exit(1)
@@ -124,8 +161,7 @@ if __name__ == '__main__':
             country TEXT,
             dev_status TEXT,
             media TEXT,
-            copyright TEXT,
-            file_name TEXT
+            copyright TEXT
         )''')
         c.execute('''CREATE TABLE IF NOT EXISTS tags (
             game_id INTEGER,
@@ -139,26 +175,64 @@ if __name__ == '__main__':
         print('DB while creating tables error: {}'.format(str(e)))
         sys.exit(1)
     
-    platform = sys.argv[2]
+    if mode == 'folder':
+        platform = args.system
 
-    try:
-        entries = os.listdir(sys.argv[3])
-    except Exception:
-        print('Error reading directory contents.')
-        sys.exit(1)
+        try:
+            entries = os.listdir(args.folder)
+        except Exception:
+            print('Error reading directory contents.')
+            sys.exit(1)
 
-    for entry in entries:
-        info = parse_tosec_name(entry)
-        if not info is None:
-            try:
-                c.execute('INSERT INTO games (platform, title, date, publisher, system, video, country, dev_status, media, copyright, file_name) VALUES(?,?,?,?,?,?,?,?,?,?,?)',\
-                    (platform, info['title'], info['date'], info['publisher'], info['system'] if 'system' in info else '', info['video'] if 'video' in info else '', info['country'] if 'country' in info else '', info['dev_status'] if 'dev_status' in info else '', info['media'] if 'media' in info else '', info['copyright'] if 'copyright' in info else '', entry))
-                game_id = c.lastrowid
-                c.executemany('INSERT INTO tags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['tags']])
-                c.executemany('INSERT INTO fulltags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['full_tags']])
-            except Exception as e:
-                print('Database error while inserting data: {}'.format(str(e)))
-                sys.exit(1)
-    conn.commit()
+        for entry in entries:
+            info = parse_tosec_name(entry)
+            if not info is None:
+                try:
+                    c.execute('INSERT INTO games (platform, title, date, publisher, system, video, country, dev_status, media, copyright) VALUES(?,?,?,?,?,?,?,?,?,?)',\
+                        (platform, info['title'], info['date'], info['publisher'], info['system'] if 'system' in info else '', info['video'] if 'video' in info else '', info['country'] if 'country' in info else '', info['dev_status'] if 'dev_status' in info else '', info['media'] if 'media' in info else '', info['copyright'] if 'copyright' in info else ''))
+                    game_id = c.lastrowid
+                    c.executemany('INSERT INTO tags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['tags']])
+                    c.executemany('INSERT INTO fulltags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['full_tags']])
+                except Exception as e:
+                    print('Database error while inserting data: {}'.format(str(e)))
+                    sys.exit(1)
+        conn.commit()
+
+    else:
+        datfile = args.datfile
+
+        print(f'Processing file {datfile}.')
+        try:
+            dom = parse(datfile)
+        except:
+            print(f'Error parsing XML file {datfile}.')
+            sys.exit(1)
+
+        header = dom.getElementsByTagName('header')
+        if len(header) != 1:
+            print('Invalid or no header information found in dat file.')
+            sys.exit(1)
+        header_name = header[0].getElementsByTagName('name')
+        if len(header_name) != 1:
+            print('Invalid header information found in dat file. No name tag.')
+            sys.exit(1)
+        platform = get_text_value(header_name[0])
+
+        games = dom.getElementsByTagName('game')
+        for game in games:
+            info = parse_tosec_name(game.getAttribute('name'))
+            if not info is None:
+                try:
+                    c.execute('INSERT INTO games (platform, title, date, publisher, system, video, country, dev_status, media, copyright) VALUES(?,?,?,?,?,?,?,?,?,?)',\
+                        (platform, info['title'], info['date'], info['publisher'], info['system'] if 'system' in info else '', info['video'] if 'video' in info else '', info['country'] if 'country' in info else '', info['dev_status'] if 'dev_status' in info else '', info['media'] if 'media' in info else '', info['copyright'] if 'copyright' in info else ''))
+                    game_id = c.lastrowid
+                    c.executemany('INSERT INTO tags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['tags']])
+                    c.executemany('INSERT INTO fulltags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['full_tags']])
+                except Exception as e:
+                    print('Database error while inserting data: {}'.format(str(e)))
+                    sys.exit(1)
+            else:
+                print(f'Error parsing TOSEC name "{game.getAttribute("name")}')
+        conn.commit()
 
     sys.exit(0)
