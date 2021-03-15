@@ -6,6 +6,7 @@ import re
 import os
 import sqlite3
 import argparse
+import uuid
 
 tosec_system = ['+2','+2a','+3','130XE','A1000','A1200','A1200-A4000','A2000','A2000-A3000','A2024','A2500-A3000UX','A3000','A4000','A4000T','A500','A500+','A500-A1000-A2000','A500-A1000-A2000-CDTV','A500-A1200','A500-A1200-A2000-A4000','A500-A2000','A500-A600-A2000','A570','A600','A600HD','AGA','AGA-CD32','Aladdin Deck Enhancer','CD32','CDTV','Computrainer','Doctor PC Jr.','ECS','ECS-AGA','Executive','Mega ST','Mega-STE','OCS','OCS-AGA','ORCH80','Osbourne 1','PIANO90','PlayChoice-10','Plus4','Primo-A','Primo-A64','Primo-B','Primo-B64','Pro-Primo','ST','STE','STE-Falcon','TT','TURBO-R GT','TURBO-R ST','VS DualSystem','VS UniSystem']
 tosec_video = ['CGA','EGA','HGC','MCGA','MDA','NTSC','NTSC-PAL','PAL','PAL-60','PAL-NTSC','SVGA','VGA','XGA']
@@ -161,15 +162,18 @@ if __name__ == '__main__':
             country TEXT,
             dev_status TEXT,
             media TEXT,
-            copyright TEXT
+            copyright TEXT,
+            uuid TEXT
         )''')
         c.execute('''CREATE TABLE IF NOT EXISTS tags (
             game_id INTEGER,
-            tag TEXT
+            tag TEXT,
+            uuid TEXT
         )''')
         c.execute('''CREATE TABLE IF NOT EXISTS fulltags (
             game_id INTEGER,
-            tag TEXT
+            tag TEXT,
+            uuid TEXT
         )''')
     except Exception as e:
         print('DB while creating tables error: {}'.format(str(e)))
@@ -186,13 +190,15 @@ if __name__ == '__main__':
 
         for entry in entries:
             info = parse_tosec_name(entry)
+            _uuid = str(uuid.uuid4())
+            print(type(info['title']))
             if not info is None:
                 try:
-                    c.execute('INSERT INTO games (platform, title, date, publisher, system, video, country, dev_status, media, copyright) VALUES(?,?,?,?,?,?,?,?,?,?)',\
-                        (platform, info['title'], info['date'], info['publisher'], info['system'] if 'system' in info else '', info['video'] if 'video' in info else '', info['country'] if 'country' in info else '', info['dev_status'] if 'dev_status' in info else '', info['media'] if 'media' in info else '', info['copyright'] if 'copyright' in info else ''))
+                    c.execute('INSERT INTO games (platform, title, date, publisher, system, video, country, dev_status, media, copyright, uuid) VALUES(?,?,?,?,?,?,?,?,?,?,?)',\
+                        (platform, info['title'], info['date'], info['publisher'], info['system'] if 'system' in info else '', info['video'] if 'video' in info else '', info['country'] if 'country' in info else '', info['dev_status'] if 'dev_status' in info else '', info['media'] if 'media' in info else '', info['copyright'] if 'copyright' in info else '', _uuid))
                     game_id = c.lastrowid
-                    c.executemany('INSERT INTO tags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['tags']])
-                    c.executemany('INSERT INTO fulltags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['full_tags']])
+                    c.executemany('INSERT INTO tags (game_id, tag, uuid) VALUES (?,?,?)', [(game_id, x, _uuid) for x in info['tags']])
+                    c.executemany('INSERT INTO fulltags (game_id, tag) VALUES (?,?,?)', [(game_id, x, _uuid) for x in info['full_tags']])
                 except Exception as e:
                     print('Database error while inserting data: {}'.format(str(e)))
                     sys.exit(1)
@@ -221,13 +227,16 @@ if __name__ == '__main__':
         games = dom.getElementsByTagName('game')
         for game in games:
             info = parse_tosec_name(game.getAttribute('name'))
+            rom = game.getElementsByTagName('rom')[0]
+            print('Name: %s, Size: %s, CRC: %s' % (rom.getAttribute('name'), rom.getAttribute('size'), rom.getAttribute('crc')))
             if not info is None:
+                _uuid = str(uuid.uuid4())
                 try:
-                    c.execute('INSERT INTO games (platform, title, date, publisher, system, video, country, dev_status, media, copyright) VALUES(?,?,?,?,?,?,?,?,?,?)',\
-                        (platform, info['title'], info['date'], info['publisher'], info['system'] if 'system' in info else '', info['video'] if 'video' in info else '', info['country'] if 'country' in info else '', info['dev_status'] if 'dev_status' in info else '', info['media'] if 'media' in info else '', info['copyright'] if 'copyright' in info else ''))
+                    c.execute('INSERT INTO games (platform, title, date, publisher, system, video, country, dev_status, media, copyright, uuid) VALUES(?,?,?,?,?,?,?,?,?,?,?)',\
+                        (platform, info['title'], info['date'], info['publisher'], info['system'] if 'system' in info else '', info['video'] if 'video' in info else '', info['country'] if 'country' in info else '', info['dev_status'] if 'dev_status' in info else '', info['media'] if 'media' in info else '', info['copyright'] if 'copyright' in info else '', _uuid))
                     game_id = c.lastrowid
-                    c.executemany('INSERT INTO tags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['tags']])
-                    c.executemany('INSERT INTO fulltags (game_id, tag) VALUES (?,?)', [(game_id, x) for x in info['full_tags']])
+                    c.executemany('INSERT INTO tags (game_id, tag, uuid) VALUES (?,?,?)', [(game_id, x, _uuid) for x in info['tags']])
+                    c.executemany('INSERT INTO fulltags (game_id, tag, uuid) VALUES (?,?,?)', [(game_id, x, _uuid) for x in info['full_tags']])
                 except Exception as e:
                     print('Database error while inserting data: {}'.format(str(e)))
                     sys.exit(1)
