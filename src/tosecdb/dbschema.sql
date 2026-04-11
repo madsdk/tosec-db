@@ -10,12 +10,12 @@ create table if not exists platform (
 create table if not exists game (
     id serial primary key,
     name varchar(256) not null,
-    date varchar(16),
-    publisher varchar(128)
+    date varchar(16) not null,
+    publisher varchar(128) not null
 );
 
--- Gamefile table
-create table if not exists gamefile (
+-- Gameversion table
+create table if not exists gameversion (
     id serial primary key,
     name varchar(256) not null,
     demo boolean not null,
@@ -40,7 +40,7 @@ create table if not exists gamefile (
     alternate boolean default false,
     verified boolean default false,
     platform_id integer not null references platform(id) on delete cascade,
-    game_id integer references game(id) on delete cascade,
+    game_id integer not null references game(id) on delete cascade,
     rom_count integer not null
 );
 
@@ -48,7 +48,7 @@ create table if not exists gamefile (
 create table if not exists rom (
     id serial primary key,
     name varchar(256) not null,
-    gamefile_id integer not null references gamefile(id) on delete cascade,
+    gameversion_id integer not null references gameversion(id) on delete cascade,
     size integer not null,
     crc32 varchar(8) not null,
     md5 varchar(32) not null,
