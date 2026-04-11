@@ -1,0 +1,7 @@
+[project]
+name = "TosecDB"
+version = "0.1.0"
+description = "A small TOSEC datfiles to SQL database converter"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
