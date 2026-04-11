@@ -10,7 +10,9 @@ from .dbschema import Game, Gameversion, Platform, Rom
 
 class Backend(Protocol):
     def initialize(self) -> None: ...
+    def find_platform(self, name: str) -> int | None: ...
     def insert_platform(self, platform: Platform) -> int: ...
+    def find_game(self, name: str, date: str, publisher: str) -> int | None: ...
     def insert_game(self, game: Game) -> int: ...
     def insert_gameversion(self, gv: Gameversion) -> int: ...
     def insert_rom(self, rom: Rom) -> int: ...
@@ -43,6 +45,12 @@ class SQLiteBackend:
         assert self._conn is not None
         return self._conn.cursor()
 
+    def find_platform(self, name: str) -> int | None:
+        cur = self._cursor()
+        cur.execute("SELECT id FROM platform WHERE name = ?", (name,))
+        row = cur.fetchone()
+        return row[0] if row else None
+
     def insert_platform(self, platform: Platform) -> int:
         cur = self._cursor()
         cur.execute(
@@ -50,6 +58,15 @@ class SQLiteBackend:
             (platform.name, platform.short_name, platform.format),
         )
         return cur.lastrowid  # type: ignore[return-value]
+
+    def find_game(self, name: str, date: str, publisher: str) -> int | None:
+        cur = self._cursor()
+        cur.execute(
+            "SELECT id FROM game WHERE name = ? AND date = ? AND publisher = ?",
+            (name, date, publisher),
+        )
+        row = cur.fetchone()
+        return row[0] if row else None
 
     def insert_game(self, game: Game) -> int:
         cur = self._cursor()
@@ -151,6 +168,23 @@ class PostgreSQLBackend:
             "INSERT INTO platform (name, short_name, format) VALUES (%s, %s, %s) RETURNING id",
             (platform.name, platform.short_name, platform.format),
         )
+
+    def find_game(self, name: str, date: str, publisher: str) -> int | None:
+        assert self._conn is not None
+        cur = self._conn.execute(
+            "SELECT id FROM game WHERE name = %s AND date = %s AND publisher = %s",
+            (name, date, publisher),
+        )
+        row = cur.fetchone()
+        return row[0] if row else None
+
+    def find_platform(self, name: str) -> int | None:
+        assert self._conn is not None
+        cur = self._conn.execute(
+            "SELECT id FROM platform WHERE name = %s", (name,)
+        )
+        row = cur.fetchone()
+        return row[0] if row else None
 
     def insert_game(self, game: Game) -> int:
         return self._execute_returning(

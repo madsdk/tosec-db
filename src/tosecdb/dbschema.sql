@@ -2,7 +2,7 @@
 create table if not exists platform (
     id serial primary key,
     name varchar(128) not null unique,
-    short_name varchar(32) not null unique,
+    short_name varchar(32) not null,
     format varchar(8) not null
 );
 

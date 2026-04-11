@@ -29,11 +29,11 @@ def import_datfile(datfile_path: str, backend: Backend) -> None:
     short_name = get_platform_short_name(platform_name) or ""
     fmt = _parse_header_format(datfile.header_name)
 
-    backend.initialize()
-
-    platform_id = backend.insert_platform(
-        Platform(id=0, name=platform_name, short_name=short_name, format=fmt)
-    )
+    platform_id = backend.find_platform(platform_name)
+    if platform_id is None:
+        platform_id = backend.insert_platform(
+            Platform(id=0, name=platform_name, short_name=short_name, format=fmt)
+        )
 
     game_cache: dict[tuple[str, str, str], int] = {}
     game_count = 0
@@ -50,10 +50,12 @@ def import_datfile(datfile_path: str, backend: Backend) -> None:
         game_key = (info.name, info.date, info.publisher)
         game_id = game_cache.get(game_key)
         if game_id is None:
+            game_id = backend.find_game(info.name, info.date, info.publisher)
+        if game_id is None:
             game_id = backend.insert_game(
                 Game(id=0, name=info.name, date=info.date, publisher=info.publisher)
             )
-            game_cache[game_key] = game_id
+        game_cache[game_key] = game_id
 
         gv_id = backend.insert_gameversion(
             Gameversion(
@@ -100,8 +102,6 @@ def import_datfile(datfile_path: str, backend: Backend) -> None:
             )
 
         game_count += 1
-
-    backend.finalize()
 
     print(f"Imported {game_count} game versions ({len(game_cache)} unique games).")
     if skip_count > 0:

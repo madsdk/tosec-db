@@ -94,4 +94,91 @@ def get_platform_short_name(full_name: str) -> str | None:
         return "Nintendo 64DD"
     if "Nintendo 64" in full_name:
         return "Nintendo 64"
+    if "Commander X16" in full_name:
+        return "Commander X16"
+    if "Acorn Archimedes" in full_name:
+        return "Acorn Archimedes"
+    if "Acorn Atom" in full_name:
+        return "Acorn Atom"
+    if "Acorn BBC" in full_name:
+        return "Acorn BBC"
+    if "Acorn Electron" in full_name:
+        return "Acorn Electron"
+    if "Applied Technology MicroBee" in full_name:
+        return "MicroBee"
+    if "Arduboy" in full_name:
+        return "Arduboy"
+    if "Bally Professional Arcade" in full_name:
+        return "Bally"
+    if "Bandai Gundam" in full_name:
+        return "Bandai Gundam"
+    if "Brother WP-230B, 330MDS & 335B" in full_name:
+        return "Brother WP-230B/330MDS/335B"
+    if "Cambridge Computer Z88" in full_name:
+        return "Cambridge Z88"
+    if "Camputers Lynx" in full_name:
+        return "Camputers Lynx"
+    if "Casio FP-1000 & FP-1100" in full_name:
+        return "Casio FP-1000/1100"
+    if "Casio Loopy" in full_name:
+        return "Casio Loopy"
+    if "Coleco ColecoVision ADAM" in full_name:
+        return "Coleco ADAM"
+    if "DEC PDP-1 " in full_name:
+        return "DEC PDP-1"
+    if "DEC PDP-11" in full_name:
+        return "DEC PDP-11"
+    if "DEC PDP-8" in full_name:
+        return "DEC PDP-8"
+    if "Dragon Data Dragon" in full_name:
+        return "Dragon 32"
+    if "EACA EG2000 Colour Genie" in full_name:
+        return "EACA EG2000"
+    if "Elektronska Industrija Nis PECOM 32 & 64" in full_name:
+        return "PECOM 32/64"
+    if "Enterprise 64 & 128" in full_name:
+        return "Enterprise 64/128"
+    if "Exelvision EXL100" in full_name:
+        return "Exelvision EXL100"
+    if "Exelvision Exeltel" in full_name:
+        return "Exelvision Exeltel"
+    if "Exidy Sorcerer" in full_name:
+        return "Exidy Sorcerer"
+    if "Fujitsu FM Towns" in full_name:
+        return "FM Towns"
+    if "Fujitsu FM-7" in full_name:
+        return "FM-7"
+    if "Fujitsu FM77-AV" in full_name:
+        return "FM77-AV"
+    if "Galaksija" in full_name:
+        return "Galaksija"
+    if "Game Park GP32" in full_name:
+        return "Game Park GP32"
+    if "IBM PC Compatibles" in full_name:
+        return "IBM PC"
+    if "IBM PCjr" in full_name:
+        return "IBM PCjr"
+    if "MSX MSX " in full_name:
+        return "MSX"
+    if "MSX MSX2" in full_name:
+        return "MSX2"
+    if "NEC PC-6001" in full_name:
+        return "NEC PC-6001"
+    if "NEC PC-8001" in full_name:
+        return "NEC PC-8001"
+    if "NEC PC-8801" in full_name:
+        return "NEC PC-8801"
+    if "NEC PC-88VA" in full_name:
+        return "NEC PC-88VA"
+    if "NEC PC-9801" in full_name:
+        return "NEC PC-9801"
+    if "NEC PC-9821" in full_name:
+        return "NEC PC-9821"
+    if "Luxor ABC 80 " in full_name:
+        return "Luxor ABC 80"
+    if "Luxor ABC 800" in full_name:
+        return "Luxor ABC 800"
+    if "MGT Sam Coupe" in full_name:
+        return "Sam Coupe"
+
     return None

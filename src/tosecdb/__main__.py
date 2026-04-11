@@ -9,7 +9,7 @@ def main() -> None:
         prog="tosecdb",
         description="Import TOSEC datfiles into a database.",
     )
-    parser.add_argument("datfile", help="Path to the TOSEC .dat file to import")
+    parser.add_argument("datfiles", nargs="+", help="Path(s) to TOSEC .dat file(s) to import")
     parser.add_argument(
         "--db-type",
         required=True,
@@ -59,7 +59,10 @@ def main() -> None:
             dbname=args.dbname,
         )
 
-    import_datfile(args.datfile, backend)  # type: ignore
+    backend.initialize()  # type: ignore[union-attr]
+    for datfile in args.datfiles:
+        import_datfile(datfile, backend)  # type: ignore[possibly-undefined]
+    backend.finalize()  # type: ignore[union-attr]
 
 
 if __name__ == "__main__":
