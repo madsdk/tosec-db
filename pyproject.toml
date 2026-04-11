@@ -5,3 +5,6 @@ description = "A small TOSEC datfiles to SQL database converter"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = []
+
+[project.optional-dependencies]
+postgresql = ["psycopg[binary]>=3.1"]
