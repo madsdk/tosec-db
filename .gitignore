@@ -105,3 +105,4 @@ venv.bak/
 
 # Scratch folder
 .scratch/
+src/.claude/

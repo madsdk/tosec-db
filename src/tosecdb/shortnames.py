@@ -180,5 +180,131 @@ def get_platform_short_name(full_name: str) -> str | None:
         return "Luxor ABC 800"
     if "MGT Sam Coupe" in full_name:
         return "Sam Coupe"
+    if "DAI Personal Computer" in full_name:
+        return "DAI"
+    if "Hanimex Pencil II" in full_name:
+        return "Hanimex Pencil II"
+    if "Hector 2HR" in full_name:
+        return "Hector 2HR"
+    if "Hitachi Basic Master Jr." in full_name:
+        return "Hitachi Basic Master Jr."
+    if "Hitachi S1" in full_name:
+        return "Hitachi S1"
+    if "IMLAC Corporation PDS-1" in full_name:
+        return "IMLAC PDS-1"
+    if "Jupiter Cantab Jupiter Ace" in full_name:
+        return "Jupiter Ace"
+    if "Kaypro II" in full_name:
+        return "Kaypro II"
+    if "MEGA MEGA65" in full_name:
+        return "MEGA65"
+    if "MITS Altair 8800" in full_name:
+        return "Altair 8800"
+    if "Matra Hachette Alice 32" in full_name:
+        return "Matra Alice 32"
+    if "Matsushita JR-100" in full_name:
+        return "Matsushita JR-100"
+    if "Matsushita JR-200" in full_name:
+        return "Matsushita JR-200"
+    if "Mattel Aquarius" in full_name:
+        return "Mattel Aquarius"
+    if "Memotech MTX" in full_name:
+        return "Memotech MTX"
+    if "Microkey Primo" in full_name:
+        return "Microkey Primo"
+    if "Mitsubishi Multi 8" in full_name:
+        return "Mitsubishi Multi 8"
+    if "NCR Decision Mate V" in full_name:
+        return "NCR Decision Mate V"
+    if "Nascom I & II" in full_name:
+        return "Nascom"
+    if "Nichibutsu My Vision" in full_name:
+        return "Nichibutsu My Vision"
+    if "Nintendo Family BASIC" in full_name:
+        return "Nintendo Family BASIC"
+    if "OCC Osborne 1" in full_name:
+        return "Osborne"
+    if "Otrona Attache" in full_name:
+        return "Otrona Attache"
+    if "Philips VG 5000" in full_name:
+        return "Philips VG 5000"
+    if "Pokitto Oy Pokitto" in full_name:
+        return "Pokitto"
+    if "Pravetz 8D" in full_name:
+        return "Pravetz 8D"
+    if "Regnecentralen RC 700" in full_name:
+        return "RC 700"
+    if "Robotron BIC A5105" in full_name:
+        return "Robotron A5105"
+    if "Sanyo MBC-550" in full_name:
+        return "Sanyo MBC-550/555"
+    if "Sega Computer 3000" in full_name:
+        return "Sega Computer 3000"
+    if "Sharp MZ-80B" in full_name:
+        return "Sharp MZ-80B"
+    if "Sharp S-BASIC" in full_name:
+        return "Sharp S-BASIC"
+    if "Sony SMC-777" in full_name:
+        return "Sony SMC-777"
+    if "Sord M5" in full_name:
+        return "Sord M5"
+    if "Spectravideo SVI-318" in full_name:
+        return "Spectravideo SVI-318/328"
+    if "Tangerine Microtan 65" in full_name:
+        return "Microtan 65"
+    if "Tangerine Oric Telestrat" in full_name:
+        return "Oric Telestrat"
+    if "Tatung Einstein TC-01" in full_name:
+        return "Tatung Einstein"
+    if "Tesla Ondra Vili" in full_name:
+        return "Tesla Ondra Vili"
+    if "Tesla PMD 85" in full_name:
+        return "Tesla PMD 85"
+    if "Thomson TO8" in full_name:
+        return "Thomson TO8/TO9"
+    if "Toshiba Pasopia 7" in full_name:
+        return "Toshiba Pasopia 7"
+    if "Toshiba Pasopia" in full_name:
+        return "Toshiba Pasopia"
+    if "VTech V.Smile Motion" in full_name:
+        return "VTech V.Smile Motion"
+    if "VTech V.Smile" in full_name:
+        return "VTech V.Smile"
+    if "Victor Technologies Victor 9000" in full_name:
+        return "Victor 9000"
+    if "Videoton TV-Computer" in full_name:
+        return "Videoton TV-Computer"
+    if "Mattel Intellivision ECS" in full_name:
+        return "Intellivision ECS"
+    if "Mattel Intellivision" in full_name:
+        return "Intellivision"
+    if "Nokia N-Gage" in full_name:
+        return "Nokia N-Gage"
+    if "RCA Studio II" in full_name:
+        return "RCA Studio II"
+    if "Sharp MZ-2000" in full_name or "Sharp MZ-2200" in full_name:
+        return "Sharp MZ-2000"
+    if "Sharp MZ-800" in full_name or "Sharp MZ-1500" in full_name:
+        return "Sharp MZ-800"
+    if "Sharp MZ-700" in full_name:
+        return "Sharp MZ-700"
+    if "Sharp X1" in full_name:
+        return "Sharp X1"
+    if "Sinclair QL" in full_name:
+        return "Sinclair QL"
+    if "TRS-80 MC-10" in full_name:
+        return "TRS-80 MC-10"
+    if "TRS-80 Model 100" in full_name:
+        return "TRS-80 Model 100"
+    if "Tangerine Oric-1" in full_name or "Tangerine Oric Atmos" in full_name:
+        return "Oric"
+    if "Thomson MO5" in full_name:
+        return "Thomson MO5"
+    if "Thomson TO7" in full_name:
+        return "Thomson TO7"
+    if "VTech Laser 350" in full_name:
+        return "VTech Laser 350/500/700/750"
+    if "VTech Laser 200" in full_name:
+        return "VTech Laser 200"
 
     return None
